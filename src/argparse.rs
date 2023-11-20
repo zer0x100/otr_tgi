@@ -18,8 +18,14 @@ pub struct Args {
     pub references: String,
     /// Otr point and values file.
     /// 
-    /// (1 x sample_size + 1) 1d csv file required.
-    /// (0, 0) is otr point. if i>=0, (0, i+1) is a value of otr_point in i-th sample.
+    /// 2d csv file required.
+    /// 0-th row: (0, 0) is the otr point.
+    /// 1-th row: let i>=0, (0, i) is a value of the otr point in the i-th sample.
     #[arg(long)]
     pub otr_point_values: String,
+    ///Slow Step Function File
+    /// 
+    /// 1d csv file. (0, i) is the value of i-th time in slow step function used for the otr tgi.
+    #[arg(long)]
+    pub step_func: String,
 }
