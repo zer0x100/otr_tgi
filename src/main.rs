@@ -6,8 +6,8 @@ mod argparse;
 mod otr_tgi_alg;
 
 mod prelude {
-    pub use anyhow::{anyhow, Result};
     pub use ndarray::prelude::*;
+    pub use std::error::Error;
 }
 
 use clap::Parser;

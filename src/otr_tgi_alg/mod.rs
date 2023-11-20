@@ -14,13 +14,8 @@ pub trait OTRTGI {
         reference: &Array2<f64>,
         otr_value: &Array1<f64>,
         step_func: &Array1<f64>,
-    ) -> Result<Array1<f64>> {
-        match is_valid_data(reference, otr_value, step_func) {
-            Ok(_) => (),
-            Err(msg) => {
-                return Err(msg);
-            }
-        }
+    ) -> Result<Array1<f64>, Box<dyn Error>> {
+        is_valid_data(reference, otr_value, step_func)?;
 
         self.solve_(reference, otr_value, step_func)
     }
@@ -29,7 +24,7 @@ pub trait OTRTGI {
         reference: &Array2<f64>,
         otr_value: &Array1<f64>,
         step_func: &Array1<f64>,
-    ) -> Result<Array1<f64>>;
+    ) -> Result<Array1<f64>, Box<dyn Error>>;
 }
 
 /// check whether data is valid for otr-tgi.
@@ -37,10 +32,10 @@ pub fn is_valid_data(
     reference: &Array2<f64>,
     otr_value: &Array1<f64>,
     step_func: &Array1<f64>,
-) -> Result<()> {
+) -> Result<(), Box<dyn Error>> {
     if reference.shape()[1] != step_func.shape()[0] || reference.shape()[0] != otr_value.shape()[0]
     {
-        return Err(anyhow!(format!(
+        return Err(From::from(format!(
             "the data size is invalid. reference: {}x{}, otr_value: {}, step_func: {}",
             reference.shape()[0],
             reference.shape()[1],
@@ -50,7 +45,7 @@ pub fn is_valid_data(
     }
 
     if step_func.iter().find(|v| **v == 0.).is_some() {
-        return Err(anyhow!("step func includes zero."));
+        return Err(From::from("step func includes zero."));
     }
     Ok(())
 }

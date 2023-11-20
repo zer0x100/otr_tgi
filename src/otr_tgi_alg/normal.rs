@@ -10,7 +10,7 @@ impl OTRTGI for OTRTGINormal {
         reference: &Array2<f64>,
         otr_value: &Array1<f64>,
         step_func: &Array1<f64>,
-    ) -> Result<Array1<f64>> {
+    ) -> Result<Array1<f64>, Box<dyn Error>> {
         let sample_size = reference.shape()[0];
         let otr_point = reference.shape()[1];
         let otr_average = otr_value.iter().map(|v| *v).sum::<f64>() / sample_size as f64;
