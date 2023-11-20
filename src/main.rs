@@ -7,6 +7,7 @@ mod otr_tgi_alg;
 
 mod prelude {
     pub use ndarray::prelude::*;
+    pub use anyhow::{anyhow, Result};
 }
 
 use clap::Parser;
