@@ -5,6 +5,8 @@
 mod normal;
 mod cs;
 
+use crate::prelude::*;
+
 pub trait OTRTGI {
-    fn solve<T: Iterator<Item = f64>, S: Iterator<Item = T>>(&self, reference: S, otr_value: T, otr_point: usize, step_func: T);
+    fn solve(&self, reference: Array2<f64>, otr_value: Array1<f64>, otr_point: usize, step_func: Array1<f64>) -> Array1<f64>;
 }

@@ -3,6 +3,11 @@
 //! 'otr-tgi' is for otr-tgi(one time read time domain ghost imaging).
 //! <otr-tgi> --help command shows short description and how to use of this program.
 mod argparse;
+mod otr_tgi_alg;
+
+mod prelude {
+    pub use ndarray::prelude::*;
+}
 
 use clap::Parser;
 
