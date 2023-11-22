@@ -24,7 +24,7 @@ pub struct Args {
     /// 1d csv file required.
     /// (0, i) is a value of the otr point in the i-th sample.
     #[arg(long)]
-    pub otr_point_values: String,
+    pub otr_values: String,
     ///Slow Step Function File
     ///
     /// 1d csv file. (0, i) is the value of i-th time in slow step function used for the otr tgi.
