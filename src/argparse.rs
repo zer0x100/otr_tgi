@@ -10,7 +10,7 @@ use clap::Parser;
 pub struct Args {
     /// The number of test samples.
     #[arg(long)]
-    pub sample_size: Option<usize>,
+    pub sample_size: usize,
     /// Reference signals file(csv)
     ///
     /// 2d csv file required.(i, j) is a value of j-th time in i-th sample.
