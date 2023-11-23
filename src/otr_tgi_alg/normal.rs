@@ -4,6 +4,12 @@ use crate::prelude::*;
 
 pub struct OTRTGINormal {}
 
+impl OTRTGINormal {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
 impl OTRTGI for OTRTGINormal {
     fn solve_(
         &self,
@@ -18,7 +24,8 @@ impl OTRTGI for OTRTGINormal {
         delta_otr_values
             .iter_mut()
             .for_each(|v| *v = *v - otr_average);
-        let ref_average = reference.columns()
+        let ref_average = reference
+            .columns()
             .into_iter()
             .map(|column| column.sum() / sample_size as f64);
         let mut delta_references: Array2<f64> = ArrayBase::zeros((sample_size, 0));
@@ -26,15 +33,14 @@ impl OTRTGI for OTRTGINormal {
             .columns()
             .into_iter()
             .zip(ref_average)
-            .map(|(column, average)| {
-                column.to_owned() / average
-            })
+            .map(|(column, average)| column.to_owned() / average)
             .for_each(|column| {
-                delta_references.push_column(column.view()).expect("can't add a column");
-            }
-        );
+                delta_references
+                    .push_column(column.view())
+                    .expect("can't add a column");
+            });
 
-        Ok(ArrayBase::from_shape_fn( otr_point, |t| {
+        Ok(ArrayBase::from_shape_fn(otr_point, |t| {
             let mut cov = 0.;
             for i in 0..sample_size {
                 cov += delta_otr_values[i] * delta_references[[i, t]];

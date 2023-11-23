@@ -2,8 +2,8 @@
 //!
 //! Here, otr tgi algorithms are defiend.
 
-mod cs;
-mod normal;
+pub mod cs;
+pub mod normal;
 
 use crate::prelude::*;
 
@@ -28,7 +28,7 @@ pub trait OTRTGI {
 }
 
 /// check whether data is valid for otr-tgi.
-pub fn is_valid_data(
+fn is_valid_data(
     reference: &Array2<f64>,
     otr_value: &Array1<f64>,
     step_func: &Array1<f64>,
@@ -52,10 +52,7 @@ pub fn is_valid_data(
 
 #[test]
 fn is_valid_data_test() {
-    let refe = array![
-        [1., 2., 0.5],
-        [0.5, 3., 1.5],
-    ];
+    let refe = array![[1., 2., 0.5], [0.5, 3., 1.5],];
     let otr_v = array![1.2, 3.];
     let step_func = array![1., 0.5, 0.3];
 
