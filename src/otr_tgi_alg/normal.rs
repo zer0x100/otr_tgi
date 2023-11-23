@@ -73,6 +73,7 @@ fn otr_tgi_normal_test() {
 
     let otr_tgi = OTRTGINormal::new();
     let result = otr_tgi.solve(&references, &otr_values, &step_func).unwrap();
+    assert!((&mask - &result).norm_l2() < 1e-8);
 
     //描画先をBackendとして指定。ここでは画像に出力するためBitMapBackend
     let root = BitMapBackend::new("results/normal_tgi_test.png", (640, 480)).into_drawing_area();
