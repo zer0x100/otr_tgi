@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //convert csv data to String
     let references = csv_converter::csv_to_2darray(
         &std::fs::read_to_string(args.references)?,
-        (args.sample_size, args.otr_point),
+        (args.sample_size, args.otr_point+1),
     )?;
     let otr_values = csv_converter::csv_to_1darray(
         &std::fs::read_to_string(args.otr_values)?,
@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ));
     }
     let step_func =
-        csv_converter::csv_to_1darray(&std::fs::read_to_string(args.step_func)?, args.otr_point)?;
+        csv_converter::csv_to_1darray(&std::fs::read_to_string(args.step_func)?, args.otr_point+1)?;
 
     let otr_tgi = otr_tgi_alg::normal::OTRTGINormal::new();
     let otr_tgi_result = otr_tgi.solve(
