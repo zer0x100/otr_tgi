@@ -43,5 +43,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         &otr_values,
         &step_func).unwrap();
 
+    let mut save_path = std::path::PathBuf::from(&args.dir);
+    save_path.push(args.fname);
+    csv_converter::save_1darray(&otr_tgi_result, &save_path.to_string_lossy())?;
+
     Ok(())
 }
