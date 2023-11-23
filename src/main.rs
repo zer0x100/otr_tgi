@@ -5,6 +5,7 @@
 mod argparse;
 mod csv_converter;
 mod otr_tgi_alg;
+mod draw_1darrays;
 
 mod prelude {
     pub use ndarray::prelude::*;
@@ -15,6 +16,7 @@ mod prelude {
 use crate::prelude::*;
 use clap::Parser;
 use otr_tgi_alg::OTRTGI;
+use plotters::style::RED;
 
 fn main() -> Result<(), Box<dyn Error>> {
     //parse command line arguments.
@@ -43,9 +45,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         &otr_values,
         &step_func).unwrap();
 
+    //save recovered mask data in csv.
     let mut save_path = std::path::PathBuf::from(&args.dir);
-    save_path.push(args.fname);
+    save_path.push(&args.fname);
     csv_converter::save_1darray(&otr_tgi_result, &save_path.to_string_lossy())?;
+
+    //plot mask data
+    let mut plot_file = std::path::PathBuf::from(save_path.file_stem().unwrap());
+    plot_file.push("plotted.png");
+    draw_1darrays::draw_1darrays(
+        &[(otr_tgi_result, RED)],
+        &plot_file.to_string_lossy(),
+        &args.fname,
+    );
 
     Ok(())
 }

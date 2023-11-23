@@ -75,41 +75,9 @@ fn otr_tgi_normal_test() {
     let result = otr_tgi.solve(&references, &otr_values, &step_func).unwrap();
     assert!((&mask - &result).norm_l2() < 1e-8);
 
-    //描画先をBackendとして指定。ここでは画像に出力するためBitMapBackend
-    let root = BitMapBackend::new("results/normal_tgi_test.png", (640, 480)).into_drawing_area();
-    //背景を白に
-    root.fill(&WHITE).unwrap();
-
-    let max = mask.norm_max();
-
-    //グラフの軸設定など
-    let mut chart = ChartBuilder::on(&root)
-        .caption(
-            "normal_tgi_test.png",
-            ("sans-serif", 50).into_font(),
-        )
-        .margin(10) //上下左右の余白
-        .x_label_area_size(30) //x軸ラベル部分の余白
-        .y_label_area_size(30) //y軸ラベル部分の余白
-        .build_cartesian_2d(
-            0..mask.shape()[0], //x軸の設定
-            -1.5 * max..1.5 * max,    //y軸の設定
-        )
-        .unwrap();
-
-    //x軸y軸、グリッド線など描画
-    chart.configure_mesh().draw().unwrap();
-    //データの描画。(x, y)のイテレータとしてデータ点を渡す。
-    let point_series = PointSeries::<_, _, Circle<_, _>, _>::new(
-        mask.iter().enumerate().map(|(i, x)| (i, *x)),
-        4,
-        &RED,
+    crate::draw_1darrays::draw_1darrays(
+        &[(mask, GREEN), (result, RED)],
+        "results/normal_tgi_test.png",
+        "normal_tgi_test.png"
     );
-    chart.draw_series(point_series).unwrap();
-    let point_series = PointSeries::<_, _, Circle<_, _>, _>::new(
-        result.iter().enumerate().map(|(i, x)| (i, *x)),
-        4,
-        &BLUE,
-    );
-    chart.draw_series(point_series).unwrap();
 }
