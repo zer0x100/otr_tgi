@@ -30,4 +30,10 @@ pub struct Args {
     /// 1d csv file. (0, i) is the value of i-th time in slow step function used for the otr tgi.
     #[arg(long)]
     pub step_func: String,
+    ///file name to save recovered mask data in.
+    #[arg(long)]
+    pub fname: String,
+    /// directory to save mask file.
+    #[arg(long)]
+    pub dir: String,
 }
