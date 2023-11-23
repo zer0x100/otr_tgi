@@ -3,17 +3,16 @@ use crate::prelude::*;
 
 /// parse csv &str data to Array1<f64> with specified length.s
 pub fn csv_to_1darray(csv_str: &str, len: usize) -> Result<Array1<f64>, Box<dyn Error>> {
-    let mut reader = csv::Reader::from_reader(csv_str.as_bytes());
+    let mut reader = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .from_reader(csv_str.as_bytes());
     let mut signal = vec![0.; len];
-    for values in reader.headers() {
-        if values.len() < len {
-            return Err(From::from(
-                "the number of value in csv data is less than needed(len).",
-            ));
-        }
-        for i in 0..len {
-            signal[i] = values[i].parse::<f64>()?;
-        }
+    let values: Vec<f64> = reader.deserialize().nth(0).unwrap()?;
+    if values.len() < len {
+        return Err(From::from("the number of csv data is less than needed(len)."));
+    }
+    for i in 0..len {
+        signal[i] = values[i];
     }
 
     Ok(Array::from(signal))
