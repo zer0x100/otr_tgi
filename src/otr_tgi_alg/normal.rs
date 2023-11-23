@@ -24,21 +24,14 @@ impl OTRTGI for OTRTGINormal {
         delta_otr_values
             .iter_mut()
             .for_each(|v| *v = *v - otr_average);
-        let ref_average = reference
-            .columns()
-            .into_iter()
-            .map(|column| column.sum() / sample_size as f64);
-        let mut delta_references: Array2<f64> = ArrayBase::zeros((sample_size, 0));
-        reference
-            .columns()
-            .into_iter()
-            .zip(ref_average)
-            .map(|(column, average)| column.to_owned() / average)
-            .for_each(|column| {
-                delta_references
-                    .push_column(column.view())
-                    .expect("can't add a column");
-            });
+        let mut delta_references = reference.clone();
+        for j in 0..delta_references.shape()[1] {
+            let column = delta_references.slice_mut(s![.., j]);
+            let average = column.sum() / sample_size as f64;
+            for x in column {
+                *x -= average;
+            }
+        }
 
         Ok(ArrayBase::from_shape_fn(otr_point + 1, |t| {
             let mut cov = 0.;
@@ -64,7 +57,7 @@ fn otr_tgi_normal_test() {
         [1., 1., -1., -1.],
         [1., -1., -1., 1.],
     ];
-    let mask = array![0., 2., 4., 1.];
+    let mask = array![0., 2., 1., 0.];
     let step_func: Array1<f64> = ArrayBase::from_shape_fn(
         4,
         |t| 2.0f64.powf(-(t as f64)),
