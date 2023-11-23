@@ -18,7 +18,7 @@ impl OTRTGI for OTRTGINormal {
         step_func: &Array1<f64>,
     ) -> Result<Array1<f64>, Box<dyn Error>> {
         let sample_size = reference.shape()[0];
-        let otr_point = reference.shape()[1];
+        let otr_point = reference.shape()[1] -1;
         let otr_average = otr_value.iter().map(|v| *v).sum::<f64>() / sample_size as f64;
         let mut delta_otr_values = otr_value.clone();
         delta_otr_values
@@ -40,14 +40,14 @@ impl OTRTGI for OTRTGINormal {
                     .expect("can't add a column");
             });
 
-        Ok(ArrayBase::from_shape_fn(otr_point, |t| {
+        Ok(ArrayBase::from_shape_fn(otr_point + 1, |t| {
             let mut cov = 0.;
             for i in 0..sample_size {
                 cov += delta_otr_values[i] * delta_references[[i, t]];
             }
             cov /= sample_size as f64;
 
-            return cov / step_func[otr_point -1 - t];
+            return cov / step_func[otr_point - t];
         }))
     }
 }
