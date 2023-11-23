@@ -3,6 +3,7 @@
 //! 'otr-tgi' is for otr-tgi(one time read time domain ghost imaging).
 //! <otr-tgi> --help command shows short description and how to use of this program.
 mod argparse;
+mod csv_converter;
 mod otr_tgi_alg;
 
 mod prelude {
@@ -12,40 +13,34 @@ mod prelude {
 
 use crate::prelude::*;
 use clap::Parser;
+use otr_tgi_alg::OTRTGI;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     //parse command line arguments.
     let args = argparse::Args::parse();
 
     //convert csv data to String
-    let references_str = std::fs::read_to_string(args.references).unwrap();
-    let otr_values_str = csv_to_1darray(&args.otr_values).unwrap();
-    let step_func_str = csv_to_1darray(&args.step_func).unwrap();
-}
-
-fn csv_to_1darray(file: &str) -> Result<Array1<f64>, csv::Error> {
-    let csv_str = std::fs::read_to_string(file).unwrap();
-    let mut reader = csv::Reader::from_reader(csv_str.as_bytes());
-    let mut signal = Vec::<f64>::new();
-    for value in reader.headers()? {
-        signal.push(value.parse::<f64>().unwrap());
+    let references = csv_converter::csv_to_2darray(
+        &std::fs::read_to_string(args.references)?,
+        (args.sample_size, args.otr_point),
+    )?;
+    let otr_values = csv_converter::csv_to_1darray(
+        &std::fs::read_to_string(args.otr_values)?,
+        args.sample_size,
+    )?;
+    if otr_values.len() < args.sample_size {
+        return Err(From::from(
+            "the number of otr_values is less than sample size/",
+        ));
     }
+    let step_func =
+        csv_converter::csv_to_1darray(&std::fs::read_to_string(args.step_func)?, args.otr_point)?;
 
-    Ok(Array::from(signal))
-}
+    let otr_tgi = otr_tgi_alg::normal::OTRTGINormal::new();
+    let otr_tgi_result = otr_tgi.solve(
+        &references,
+        &otr_values,
+        &step_func).unwrap();
 
-fn csv_to_2darray(file: &str, shape: (usize, usize)) -> Result<Array2<f64>, Box<dyn Error>> {
-    let csv_str = std::fs::read_to_string(file).unwrap();
-
-    let mut signals = Vec::<f64>::new();
-    let mut reader = csv::Reader::from_reader(csv_str.as_bytes());
-    for signal in reader.deserialize::<Vec<f64>>() {
-        let signal = signal?;
-        signals.extend(signal);
-    }
-
-    //ArrayBase::from_shape_vec((), )
-
-    //stem return
-    Ok(ArrayBase::zeros((0,0)))
+    Ok(())
 }
