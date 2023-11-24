@@ -68,7 +68,7 @@ pub fn csv_to_2darray(csv_str: &str, shape: (usize, usize)) -> Result<Array2<f64
 }
 
 pub fn save_1darray(arr: &Array1<f64>, path: &str) -> Result<(), Box<dyn Error>> {
-    let f = std::fs::File::open(path)?;
+    let f = std::fs::File::create(path)?;
 
     let mut writer = csv::Writer::from_writer(f);
 
