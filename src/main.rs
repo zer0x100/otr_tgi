@@ -11,7 +11,6 @@ mod prelude {
     pub use ndarray::prelude::*;
     pub use ndarray_linalg::Norm;
     pub use std::error::Error;
-    pub const F64_EPS: f64 = 1e-8;
 }
 
 use crate::prelude::*;
