@@ -11,3 +11,4 @@ csv = "1.3.0"
 ndarray = "0.15.6"
 ndarray-linalg = { version = "0.16.0", features = ["intel-mkl"] }
 plotters = "0.3.5"
+sparse_modeling = { git = "https://github.com/zer0x100/sparse_modeling.git"}
