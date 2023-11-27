@@ -31,11 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         &std::fs::read_to_string(args.otr_values)?,
         args.sample_size,
     )?;
-    if otr_values.len() < args.sample_size {
-        return Err(From::from(
-            "the number of otr_values is less than sample size/",
-        ));
-    }
+
     let step_func =
         csv_converter::csv_to_1darray(&std::fs::read_to_string(args.step_func)?, args.otr_point+1)?;
 
