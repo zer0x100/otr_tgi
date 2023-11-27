@@ -62,14 +62,12 @@ fn otr_tgi_normal_test() {
         4,
         |t| 2.0f64.powf(-(t as f64)),
     );
-    let mut scaled_ref = references.clone();
-    for i in 0..scaled_ref.shape()[1] {
-        let column = scaled_ref.slice_mut(s![.., i]);
-        for x in column {
-            *x *= step_func[3 - i];
-        }
+    let mut scaled_mask = mask.clone();
+    for i in 0..4 {
+        scaled_mask[i] *= step_func[3 -i];
     }
-    let otr_values = scaled_ref.dot(&mask);
+
+    let otr_values = references.dot(&scaled_mask);
 
     let otr_tgi = OTRTGINormal::new();
     let result = otr_tgi.solve(&references, &otr_values, &step_func).unwrap();
