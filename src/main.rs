@@ -47,8 +47,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     csv_converter::save_1darray(&otr_tgi_result, &save_path.to_string_lossy())?;
 
     //plot mask data
-    let mut plot_file = std::path::PathBuf::from(save_path.file_stem().unwrap());
-    plot_file.push("plotted.png");
+    let mut plot_file = std::path::PathBuf::from(&args.dir);
+    plot_file.push(save_path.file_stem().unwrap().to_str().unwrap().to_owned() + "_plotted.png");
     draw_1darrays::draw_1darrays(
         &[(otr_tgi_result, RED)],
         &plot_file.to_string_lossy(),
