@@ -15,7 +15,6 @@ mod prelude {
 
 use crate::prelude::*;
 use clap::Parser;
-use otr_tgi_alg::OTRTGI;
 use plotters::style::RED;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -24,18 +23,45 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     //convert csv data to String
     let references = csv_converter::csv_to_2darray(
-        &std::fs::read_to_string(args.references)?,
+        &std::fs::read_to_string(&args.references)?,
         (args.sample_size, args.otr_point+1),
     )?;
     let otr_values = csv_converter::csv_to_1darray(
-        &std::fs::read_to_string(args.otr_values)?,
+        &std::fs::read_to_string(&args.otr_values)?,
         args.sample_size,
     )?;
 
     let step_func =
-        csv_converter::csv_to_1darray(&std::fs::read_to_string(args.step_func)?, args.otr_point+1)?;
+        csv_converter::csv_to_1darray(&std::fs::read_to_string(&args.step_func)?, args.otr_point+1)?;
 
-    let otr_tgi = otr_tgi_alg::normal::OTRTGINormal::new();
+    let otr_tgi: Box<dyn otr_tgi_alg::OTRTGI>;
+    if let Some(cs_method) = args.get_cs_method() {
+        let sparse_basis = if let Some(basis) = args.sparse_basis {
+            csv_converter::csv_to_2darray(
+                &std::fs::read_to_string(basis)?,
+                (args.otr_point+1, args.otr_point+1),
+            )?
+        } else {
+            ArrayBase::from_shape_fn(
+                (args.otr_point+1, args.otr_point+1),
+                |(i, j)| {
+                    if i == j {
+                        1.0
+                    } else {
+                        0.
+                    }
+                })
+        };
+
+        otr_tgi = Box::new(otr_tgi_alg::cs::OTRTGICS::new(
+            cs_method,
+                &sparse_basis,
+            )
+        );
+    } else {
+        otr_tgi = Box::new(otr_tgi_alg::normal::OTRTGINormal::new())
+    };
+
     let otr_tgi_result = otr_tgi.solve(
         &references,
         &otr_values,

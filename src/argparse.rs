@@ -47,7 +47,7 @@ pub struct Args {
     iter_num: Option<usize>,
     /// CS Sparse Basis's file name
     #[arg(long)]
-    sparse_basis: Option<String>,
+    pub sparse_basis: Option<String>,
 }
 
 impl Args {
