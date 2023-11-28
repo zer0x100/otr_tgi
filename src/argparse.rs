@@ -45,26 +45,25 @@ pub struct Args {
     /// CS method's iterator size
     #[arg(long)]
     iter_num: Option<usize>,
+    /// CS Sparse Basis's file name
+    #[arg(long)]
+    sparse_basis: Option<String>,
 }
 
 impl Args {
     pub fn get_cs_method(&self) -> Option<Box<dyn sparse_modeling::sparse_alg::SparseAlg>> {
-        if let Some(iter_num) = self.iter_num {
-            if let Some(method) = self.cs_method {
-                match method {
-                    CSMethod::OMP => Some(Box::new(sparse_modeling::sparse_alg::Omp::new(0.))),
-                    CSMethod::FOCUSS => Some(Box::new(sparse_modeling::sparse_alg::L1Focuss::new(0., iter_num, true))),
-                    CSMethod::ISTA => Some(Box::new(sparse_modeling::sparse_alg::SparseAlgLasso::new(
-                        0.,
-                        Box::new(sparse_modeling::lasso_alg::LassoIsta::new(iter_num, 0.)),
-                        true))),
-                    CSMethod::FISTA => Some(Box::new(sparse_modeling::sparse_alg::SparseAlgLasso::new(
-                        0.,
-                        Box::new(sparse_modeling::lasso_alg::LassoFista::new(iter_num, 0.)),
-                        true))),
-                }
-            } else {
-                None
+        if let Some(method) = self.cs_method {
+            match method {
+                CSMethod::OMP => Some(Box::new(sparse_modeling::sparse_alg::Omp::new(0.))),
+                CSMethod::FOCUSS => Some(Box::new(sparse_modeling::sparse_alg::L1Focuss::new(0., self.iter_num.unwrap(), true))),
+                CSMethod::ISTA => Some(Box::new(sparse_modeling::sparse_alg::SparseAlgLasso::new(
+                    0.,
+                    Box::new(sparse_modeling::lasso_alg::LassoIsta::new(self.iter_num.unwrap(), 0.)),
+                    true))),
+                CSMethod::FISTA => Some(Box::new(sparse_modeling::sparse_alg::SparseAlgLasso::new(
+                    0.,
+                    Box::new(sparse_modeling::lasso_alg::LassoFista::new(self.iter_num.unwrap(), 0.)),
+                    true))),
             }
         } else {
             None
