@@ -48,6 +48,9 @@ pub struct Args {
     /// CS Sparse Basis's file name
     #[arg(long)]
     pub sparse_basis: Option<String>,
+    /// Lasso's lambda value (Lasso: minimize -> lambda * ||x||_1 + 1/2 * ||y - Ax||_2 ^{2})
+    #[arg(long)]
+    lasso_lambda: Option<f64>,
 }
 
 impl Args {
@@ -57,11 +60,11 @@ impl Args {
                 CSMethod::OMP => Some(Box::new(sparse_modeling::sparse_alg::Omp::new(0.))),
                 CSMethod::FOCUSS => Some(Box::new(sparse_modeling::sparse_alg::L1Focuss::new(0., self.iter_num.unwrap(), true))),
                 CSMethod::ISTA => Some(Box::new(sparse_modeling::sparse_alg::SparseAlgLasso::new(
-                    0.,
+                    self.lasso_lambda.unwrap(),
                     Box::new(sparse_modeling::lasso_alg::LassoIsta::new(self.iter_num.unwrap(), 0.)),
                     true))),
                 CSMethod::FISTA => Some(Box::new(sparse_modeling::sparse_alg::SparseAlgLasso::new(
-                    0.,
+                    self.lasso_lambda.unwrap(),
                     Box::new(sparse_modeling::lasso_alg::LassoFista::new(self.iter_num.unwrap(), 0.)),
                     true))),
             }
