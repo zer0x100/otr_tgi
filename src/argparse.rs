@@ -45,6 +45,9 @@ pub struct Args {
     /// CS method's iterator size
     #[arg(long)]
     iter_num: Option<usize>,
+    /// CS method's threshold
+    #[arg(long)]
+    threshold: Option<f64>,
     /// CS Sparse Basis's file name
     #[arg(long)]
     pub sparse_basis: Option<String>,
@@ -57,15 +60,15 @@ impl Args {
     pub fn get_cs_method(&self) -> Option<Box<dyn sparse_modeling::sparse_alg::SparseAlg>> {
         if let Some(method) = self.cs_method {
             match method {
-                CSMethod::OMP => Some(Box::new(sparse_modeling::sparse_alg::Omp::new(0.))),
-                CSMethod::FOCUSS => Some(Box::new(sparse_modeling::sparse_alg::L1Focuss::new(0., self.iter_num.unwrap(), true))),
+                CSMethod::OMP => Some(Box::new(sparse_modeling::sparse_alg::Omp::new(self.threshold.unwrap()))),
+                CSMethod::FOCUSS => Some(Box::new(sparse_modeling::sparse_alg::L1Focuss::new(self.threshold.unwrap(), self.iter_num.unwrap(), true))),
                 CSMethod::ISTA => Some(Box::new(sparse_modeling::sparse_alg::SparseAlgLasso::new(
                     self.lasso_lambda.unwrap(),
-                    Box::new(sparse_modeling::lasso_alg::LassoIsta::new(self.iter_num.unwrap(), 0.)),
+                    Box::new(sparse_modeling::lasso_alg::LassoIsta::new(self.iter_num.unwrap(), self.threshold.unwrap())),
                     true))),
                 CSMethod::FISTA => Some(Box::new(sparse_modeling::sparse_alg::SparseAlgLasso::new(
                     self.lasso_lambda.unwrap(),
-                    Box::new(sparse_modeling::lasso_alg::LassoFista::new(self.iter_num.unwrap(), 0.)),
+                    Box::new(sparse_modeling::lasso_alg::LassoFista::new(self.iter_num.unwrap(), self.threshold.unwrap())),
                     true))),
             }
         } else {
